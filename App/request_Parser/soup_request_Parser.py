@@ -3,11 +3,11 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 from requests import Response
-
+from App.data.Product import Product
 
 class RequestParser:
     def __init__(self):
-        self.parsed_product = {}
+        self.parsed_product:Product
 
         self.request_headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -24,56 +24,43 @@ class RequestParser:
             'Upgrade-Insecure-Requests': '1'
         }
 
-    def test (self, url: str)-> dict:
+    def test (self, url: str):
         with requests.Session() as session:
             respond = session.get(url, headers=self.request_headers)
-            if respond.ok:
-                self.parsed_product = self._parse_product_page(respond)
+
+        if respond.ok:
+            self._parse_product(respond)
+
+            print(f"{self.__class__.__name__} has result: {self.parsed_product}")
+        else:
+            logging.error(f"{RequestParser.__name__} has failed")
 
 
-            else:
-                logging.error(f"{RequestParser.__name__} has failed")
-
-        return self.parsed_product
-
-    def _parse_product_page(self, respond:Response):
+    def _parse_product(self, respond:Response):
         data = BeautifulSoup(respond.text, "html.parser")
 
         #__________________________________________________________
         try:
-            self.parsed_product['title'] = data.find("h1", class_ = "h1-prod-name").get_text().strip()
+            title = data.find("h1", class_ = "h1-prod-name").get_text().strip()
         except AttributeError:
-            self.parsed_product['title'] = None
+            title= None
 
         #__________________________________________________________
         try:
-                self.parsed_product['vendor'] = data.find(class_ = "breadcrumb").select("li")[-2].get_text().strip()
+            vendor = data.find(class_ = "breadcrumb").select("li")[-2].get_text().strip()
         except AttributeError:
-            self.parsed_product['vendor'] = None
+            vendor = None
 
         #__________________________________________________________
         try:
-            self.parsed_product['price'] = data.find(class_ = "price").get_text().strip()
+            price = data.find(class_ = "price").get_text().strip()
         except AttributeError:
-            self.parsed_product['price'] = None
+            price = None
 
         #__________________________________________________________
         try:
-        #TODO need to fix img loading
-            self.parsed_product['img_url'] = data.find(class_ = "slick-list draggable").text
+            productKey = int(data.select_one('[class*="prod-code"]').get_text().split(": ")[1])
         except AttributeError:
-            self.parsed_product['img_url'] = None
+            productKey = None
 
-        #__________________________________________________________
-        try:
-            self.parsed_product['specification'] = data.h1.text.strip()
-        except AttributeError:
-            self.parsed_product['specification'] = None
-
-        #__________________________________________________________
-        try:
-            self.parsed_product['productKey'] = data.h1.text.strip()
-        except AttributeError:
-            self.parsed_product['productKey'] = None
-
-        print(self.parsed_product)
+        self.parsed_product = Product(title, vendor, price, productKey)
