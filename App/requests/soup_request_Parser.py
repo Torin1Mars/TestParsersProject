@@ -33,7 +33,9 @@ class RequestParser:
 
             print(f"{self.__class__.__name__} has result: {self.parsed_product}")
         else:
-            logging.error(f"{RequestParser.__name__} has failed")
+            logging.error(f"{self.__name__} has failed")
+
+        session.close()
 
 
     def _parse_product(self, respond:Response):
