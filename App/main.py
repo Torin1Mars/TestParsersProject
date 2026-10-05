@@ -6,9 +6,7 @@ from App.selenium.selenium_Parser import SeleniumParser
 if __name__ == "__main__":
     #Creating parsers
     requestsParser = RequestParser()
-
     playWrightParser = PlayWrightParser()
-
     selenium = SeleniumParser()
 
     #Runinig
@@ -19,7 +17,7 @@ if __name__ == "__main__":
         print(e)
 
     try :
-        playWrightParser.test()
+        playWrightParser.test("https://www.foxtrot.com.ua/ru/shop/planshetiy-samsung-sm-x130n-galaxy-tab-a11-wi-fi-8128gb-zae.html")
     except Exception as e:
         print(f"Play Wright Parser has failed.")
         print(e)

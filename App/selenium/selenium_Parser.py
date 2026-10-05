@@ -44,7 +44,7 @@ class SeleniumParser:
 
         #__________________________________________________________
         try:
-            vendor = driver_with_page.find_element(By.CSS_SELECTOR, "ol.breadcrumbs li:nth-child(3) span[itemprop='name']").text.strip()
+            vendor = driver_with_page.find_element(By.CSS_SELECTOR, "ol.breadcrumbs li:nth-child(3) span[itemprop='name']").text.strip().lower()
         except AttributeError:
             vendor = None
 
@@ -56,7 +56,7 @@ class SeleniumParser:
 
         #__________________________________________________________
         try:
-            productKey = driver_with_page.find_element(By.CSS_SELECTOR, "div.product_id span:first-child").get_attribute("textContent").strip()
+            productKey = int(driver_with_page.find_element(By.CSS_SELECTOR, "div.product_id span:first-child").get_attribute("textContent").strip())
         except AttributeError:
             productKey = None
 

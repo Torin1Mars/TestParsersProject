@@ -49,7 +49,7 @@ class RequestParser:
 
         #__________________________________________________________
         try:
-            vendor = data.find(class_ = "breadcrumb").select("li")[-2].get_text().strip()
+            vendor = data.find(class_ = "breadcrumb").select("li")[-2].get_text().strip().lower()
         except AttributeError:
             vendor = None
 
